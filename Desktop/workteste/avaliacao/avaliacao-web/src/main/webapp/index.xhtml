@@ -1,0 +1,91 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.org/ui">
+ 
+     <h:head>
+     </h:head>
+ 
+     <h:body>
+		
+		
+		
+
+
+
+
+<h:form id="form">
+	
+    
+     	<center>
+        <p:panel header="Cadastro Pessoa Física/Jurídica">
+		<p:messages id="messages"  closable="true" />
+        
+        <h:panelGrid columns="2" id="gridId"  cellpadding="5">
+            
+           
+           
+        </h:panelGrid>
+        
+        <p:spacer height="20px"/>
+        <p:separator/>
+ 		</p:panel>
+ 		
+		<p:spacer height="20px"/>
+		
+		<p:panel>
+			<p:dataTable id="dataTable" var="pes" value="#{pessoaMB.pessoaList}"
+				paginator="true" rows="5">
+				<f:facet name="header">
+           		 Pessoas Físicas/Jurídicas
+        		</f:facet>
+			
+			 
+			<p:column filterBy="#{pes.nomeRazao}" headerText="Tipo Pessoa" style="text-align: center;"
+				 filterMatchMode="contains">
+				<p:outputLabel value="#{pes.tipoPessoa}" />
+			</p:column>
+			
+			<p:column filterBy="#{pes.nomeRazao}" headerText="Nome / Razão social" style="text-align: center;"
+				 filterMatchMode="contains">
+				<p:outputLabel value="#{pes.nomeRazao}" />
+			</p:column>
+			
+			<p:column filterBy="#{pes.endereco.municipio}" headerText="Município" style="text-align: center;"
+				 filterMatchMode="contains">
+				<p:outputLabel value="#{pes.endereco.municipio}" />
+			</p:column>
+			
+			<p:column filterBy="#{pes.endereco.uf}" headerText="UF"
+				 filterMatchMode="contains" style="text-align: center;">
+				<p:outputLabel value="#{pes.endereco.uf}" />
+			</p:column>
+			
+			<p:column filterBy="#{pes.dtNascFundacao}" headerText="Data de Nascimento / Fundação"
+				 filterMatchMode="contains" style="text-align: center;">
+				<p:outputLabel value="#{pes.dtNascFundacao}" style="text-align: center;">
+					<f:convertDateTime pattern="dd/MM/yyyy" />
+				</p:outputLabel>
+			</p:column>
+			
+			
+			
+			<p:column style="width:55px;text-align: center">
+				<f:facet name="header">
+					<p:outputLabel value="Excluir" />
+				</f:facet>
+	
+				
+			</p:column>
+			
+		</p:dataTable>
+		</p:panel>
+        
+    
+    </center>
+
+</h:form>
+		 
+ 
+     </h:body>
+</html>
