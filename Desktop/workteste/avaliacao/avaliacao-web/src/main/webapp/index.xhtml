@@ -1,20 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:p="http://primefaces.org/ui">
- 
-     <h:head>
-     </h:head>
- 
-     <h:body>
-		
-		
-		
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	
+<f:view contentType="text/html">
+	<h:head>
+		<ui:include src="/css/all_css.css" />
+	</h:head>
+</f:view>
 
 
-
-
-<h:form id="form">
+	<h:form id="form">
 	
     
      	<center>
@@ -23,18 +22,56 @@
         
         <h:panelGrid columns="2" id="gridId"  cellpadding="5">
             
+            <p:outputLabel for="tipoPessoa" value="Tipo Pessoa:" />
+	        <p:selectOneRadio id="tipoPessoa" value="#{pessoaMB.pessoa.tipoPessoa}"  requiredMessage="O Campo Tipo Pessoa é Obrigatório">
+	        	<p:ajax update="@form" process="@this" immediate="true" />
+	            <f:selectItem itemLabel="Pessoa Física" itemValue="F" noSelectionOption="true"/>
+	            <f:selectItem itemLabel="Pessoa Jurídica" itemValue="J" />
+	        </p:selectOneRadio>
+	        
+	        <h:panelGroup id="nameGrup">
+	        <p:outputLabel id="nameLabelPF" for="nome" value="Nome:" rendered="#{pessoaMB.pessoa.tipoPessoa =='F'}"/>
+	        <p:outputLabel id="nameLabelPJ" for="nome" value="Razão social:" rendered="#{pessoaMB.pessoa.tipoPessoa !='F'}"/>
+	        </h:panelGroup>
+	        <p:inputText id="nome" value="#{pessoaMB.pessoa.nomeRazao}" maxlength="50"  required="true" requiredMessage="O Campo Nome/Razão social  é Obrigatório" />
+            
+            <p:outputLabel for="rg" value="RG:" rendered="#{pessoaMB.pessoa.tipoPessoa =='F'}" />
+	        <p:inputMask mask="999999999" id="rg" value="#{pessoaMB.pessoa.rg}" required="true" rendered="#{pessoaMB.pessoa.tipoPessoa =='F'}"  requiredMessage="O Campo RG é Obrigatório" />
+            
+            <p:outputLabel for="municipio" value="Município:" />
+	        <p:inputText id="municipio" value="#{pessoaMB.pessoa.endereco.municipio}" maxlength="50" required="true" requiredMessage="O Campo Município é Obrigatório" />
+	        
+	        
+	         <p:outputLabel for="uf" value="UF:"  />
+		        <p:selectOneMenu id="uf" value="#{pessoaMB.pessoa.endereco.uf}" filter="true" filterMatchMode="contains" required="true" requiredMessage="O Campo UF é Obrigatório">
+		        <p:ajax update="nameGrup,dtGrup" process="@this" immediate="true" />
+		            <f:selectItems value="#{pessoaMB.ufList}"  />
+        	</p:selectOneMenu>
+            
+           	<h:panelGroup id="dtGrup">
+           	<p:outputLabel for="dt" value="Data Nascimento:" rendered="#{pessoaMB.pessoa.tipoPessoa =='F'}"/>
+	        <p:outputLabel for="dt" value="Data Fundação:" rendered="#{pessoaMB.pessoa.tipoPessoa !='F'}"/>
+        	</h:panelGroup>
+        	<p:calendar id="dt" value="#{pessoaMB.pessoa.dtNascFundacao}" locale="pt" navigator="true" pattern="dd/MM/yyyy"  required="true" requiredMessage="O Campo Data Nascimento/Fundação é Obrigatório"/>
            
            
         </h:panelGrid>
         
         <p:spacer height="20px"/>
         <p:separator/>
+        <h:panelGroup id="btns">
+        <p:commandButton rendered="#{!pessoaMB.alteracao}" value="Cadastrar" type="submit" actionListener="#{pessoaMB.cadastrar()}" icon="ui-icon-check" ajax="fasle" process="@this,uf" update="@form"/>
+        <p:commandButton rendered="#{pessoaMB.alteracao}" value="Alterar"  actionListener="#{pessoaMB.alterar()}" icon="ui-icon-check" ajax="false" process="@this" update="@form"/>
+ 		<p:commandButton value="Limpar" actionListener="#{pessoaMB.ini()}" icon="ui-icon-close" update="@form" process="@this,dataTable" >
+						<p:resetInput target="@form" />
+		</p:commandButton>
+		</h:panelGroup>
  		</p:panel>
  		
 		<p:spacer height="20px"/>
 		
 		<p:panel>
-			<p:dataTable id="dataTable" var="pes" value="#{pessoaMB.pessoaList}"
+			<p:dataTable id="dataTable" var="pes" value="#{pessoaMB.pessoasList}"
 				paginator="true" rows="5">
 				<f:facet name="header">
            		 Pessoas Físicas/Jurídicas
@@ -43,7 +80,14 @@
 			 
 			<p:column filterBy="#{pes.nomeRazao}" headerText="Tipo Pessoa" style="text-align: center;"
 				 filterMatchMode="contains">
-				<p:outputLabel value="#{pes.tipoPessoa}" />
+				<p:outputLabel value="Física" rendered="#{pes.tipoPessoa == 'F'}" />
+				<p:outputLabel value="Juridíca" rendered="#{pes.tipoPessoa == 'J'}" />
+			</p:column>
+			
+			<p:column filterBy="#{pes.rg}" headerText="RG" style="text-align: center;"
+				 filterMatchMode="contains">
+				<p:outputLabel  readonly="true" value="#{pes.rg.toString()}" rendered="#{pes.tipoPessoa == 'F'}" />
+				<p:outputLabel value="-" rendered="#{pes.tipoPessoa == 'J'}" />
 			</p:column>
 			
 			<p:column filterBy="#{pes.nomeRazao}" headerText="Nome / Razão social" style="text-align: center;"
@@ -61,20 +105,25 @@
 				<p:outputLabel value="#{pes.endereco.uf}" />
 			</p:column>
 			
-			<p:column filterBy="#{pes.dtNascFundacao}" headerText="Data de Nascimento / Fundação"
-				 filterMatchMode="contains" style="text-align: center;">
+			<p:column  headerText="Data de Nascimento / Fundação"
+				  style="text-align: center;">
 				<p:outputLabel value="#{pes.dtNascFundacao}" style="text-align: center;">
 					<f:convertDateTime pattern="dd/MM/yyyy" />
 				</p:outputLabel>
 			</p:column>
 			
-			
+			<p:column style="width:55px;text-align: center" headerText="Editar">
+			<p:commandButton ajax="true" actionListener="#{pessoaMB.editar(pes.pessoaId)}"
+				update=":form:gridId,:form:btns" process="@this"  icon="ui-icon-pencil" title="Editar">
+			</p:commandButton>
+			</p:column>
 			
 			<p:column style="width:55px;text-align: center">
 				<f:facet name="header">
 					<p:outputLabel value="Excluir" />
 				</f:facet>
 	
+				<p:commandButton icon="ui-icon-trash" title="Excluir" immediate="true" process="@this" update="@form" actionListener="#{pessoaMB.excluir(pes)}"/> 
 				
 			</p:column>
 			
@@ -85,7 +134,36 @@
     </center>
 
 </h:form>
-		 
- 
-     </h:body>
+
+<script>
+PrimeFaces.locales['pt'] = {
+                closeText: 'Fechar',
+                prevText: 'Anterior',
+                nextText: 'Próximo',
+                currentText: 'Começo',
+                monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun', 'Jul','Ago','Set','Out','Nov','Dez'],
+                dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
+                dayNamesMin: ['D','S','T','Q','Q','S','S'],
+                weekHeader: 'Semana',
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: '',
+                timeOnlyTitle: 'Só Horas',
+                timeText: 'Tempo',
+                hourText: 'Hora',
+                minuteText: 'Minuto',
+                secondText: 'Segundo',
+                currentText: 'Data Atual',
+                ampm: false,
+                month: 'Mês',
+                week: 'Semana',
+                day: 'Dia',
+                allDayText : 'Todo Dia'
+            };
+</script>
+
+
 </html>

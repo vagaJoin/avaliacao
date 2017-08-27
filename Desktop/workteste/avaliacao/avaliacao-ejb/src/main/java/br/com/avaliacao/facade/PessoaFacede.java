@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import br.com.avaliacao.exception.AvaliacaoException;
 import br.com.avaliacao.model.Pessoa;
 
 
@@ -19,31 +20,32 @@ import br.com.avaliacao.model.Pessoa;
 public interface PessoaFacede {
 	
 	/**
-	 * save
+	 * salvar
 	 * @param Pessoa
 	 */
-	public void save(Pessoa Pessoa); 
+	public void salvar(Pessoa pessoa) throws AvaliacaoException; 
 	
 	/**
 	 * update
 	 * @param Pessoa
 	 * @return Pessoa
 	 */
-	public  Pessoa update(Pessoa Pessoa); 
+	public  Pessoa atualizar (Pessoa pessoa) throws AvaliacaoException; 
 	/**
-	 * delete
+	 * remover
 	 * @param Pessoa
 	 */
-	public  void delete(Pessoa Pessoa); 
+	public  void remover(Long id) throws AvaliacaoException; 
 	/**
-	 * find
+	 * encontrar
 	 * @param Long Pessoa
 	 */
-	public  Pessoa find(Long Pessoa); 
+	public  Pessoa encontrar(Long id) throws AvaliacaoException; 
 	/**
-	 * findAll
+	 * getList
 	 * @return List<Pessoa>
 	 */
-	public  List<Pessoa> findAll(); 
-	
+	public  List<Pessoa> getList() throws AvaliacaoException;
+
+		
 }
